@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student Performance Data Analysis Dashboard">
+  <title>Student Performance | Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Student Analytics home">
+        <span class="brand-mark"><i class="fa-solid fa-graduation-cap"></i></span>
+        <span><strong>EduMetrics</strong><small>STUDENT ANALYTICS</small></span>
+      </a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#overview"><i class="fa-solid fa-grid-2"></i> Overview</a>
+        <a class="nav-link" href="#subjects"><i class="fa-solid fa-chart-column"></i> Subject analysis</a>
+        <a class="nav-link" href="#students"><i class="fa-solid fa-users"></i> Student records</a>
+        <a class="nav-link" href="#attendance"><i class="fa-regular fa-calendar-check"></i> Attendance</a>
+        <a class="nav-link" href="#insights"><i class="fa-regular fa-lightbulb"></i> Insights</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card">
+          <span class="help-icon"><i class="fa-regular fa-circle-question"></i></span>
+          <strong>Need a hand?</strong>
+          <p>Upload a CSV to explore your class performance.</p>
+          <a href="#upload">View upload options <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="profile">
+          <div class="avatar">DA</div>
+          <div><strong>Data Analyst</strong><small>Intern workspace</small></div>
+          <i class="fa-solid fa-ellipsis"></i>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button menu-toggle" id="menuToggle" aria-label="Toggle navigation"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb">Workspace <i class="fa-solid fa-chevron-right"></i> <strong>Overview</strong></div>
+        <div class="top-actions">
+          <span class="live-status"><span></span> Local analysis</span>
+          <button class="icon-button" id="topUploadBtn" title="Upload dataset" aria-label="Upload dataset"><i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+        </div>
+      </header>
+
+      <section class="page-heading" id="overview">
+        <div>
+          <p class="eyebrow">DATA ANALYTICS / INTERNSHIP PROJECT</p>
+          <h1>Student performance</h1>
+          <p class="subtitle">Understand learning outcomes and uncover meaningful patterns in your data.</p>
+        </div>
+        <div class="heading-actions">
+          <span class="dataset-chip"><i class="fa-solid fa-file-csv"></i> <span id="datasetName">sample-data.csv</span></span>
+          <button class="button button-primary" id="exportSummary"><i class="fa-solid fa-download"></i> Export summary</button>
+        </div>
+      </section>
+
+      <section class="upload-strip" id="upload">
+        <div class="upload-symbol"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <div class="upload-copy"><strong>Analyze your own dataset</strong><span>Upload a CSV file with student marks and attendance. Your data stays in this browser.</span></div>
+        <label class="button button-outline upload-label" for="csvInput">Choose CSV <i class="fa-solid fa-arrow-up-from-bracket"></i></label>
+        <input id="csvInput" type="file" accept=".csv,text/csv" hidden>
+      </section>
+      <div class="message" id="message" role="status" aria-live="polite"></div>
+
+      <section class="filter-panel" aria-label="Data filters">
+        <div class="filter-title"><i class="fa-solid fa-sliders"></i><strong>Filter data</strong><span>Refine the dashboard view</span></div>
+        <div class="filter-controls">
+          <label>Subject
+            <select id="subjectFilter"><option value="all">All subjects</option></select>
+          </label>
+          <label>Performance
+            <select id="categoryFilter">
+              <option value="all">All categories</option>
+              <option>Excellent</option><option>Good</option><option>Average</option><option>Needs Improvement</option>
+            </select>
+          </label>
+          <label>Attendance
+            <select id="attendanceFilter">
+              <option value="all">Any attendance</option>
+              <option value="low">Below 75%</option>
+              <option value="healthy">75% and above</option>
+            </select>
+          </label>
+          <label class="search-field">Search
+            <span><i class="fa-solid fa-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Name or student ID"></span>
+          </label>
+          <button class="reset-button" id="resetFilters"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        </div>
+        <p class="filter-note" id="filterNote">Showing all records</p>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading"><div><h2>Performance overview</h2><p>Key indicators for the selected student records</p></div><span class="updated-label"><i class="fa-regular fa-clock"></i> Updates automatically</span></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total students</span><span class="stat-icon blue"><i class="fa-solid fa-users"></i></span></div><div class="stat-value" id="totalStudents">—</div><div class="stat-foot">Students in current view</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Average marks</span><span class="stat-icon teal"><i class="fa-solid fa-chart-line"></i></span></div><div class="stat-value" id="averageMarks">—<small>/ 100</small></div><div class="stat-foot">Mean across selected subjects</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Highest marks</span><span class="stat-icon purple"><i class="fa-solid fa-arrow-trend-up"></i></span></div><div class="stat-value" id="highestMarks">—</div><div class="stat-foot" id="highestName">Top score</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Lowest marks</span><span class="stat-icon orange"><i class="fa-solid fa-arrow-trend-down"></i></span></div><div class="stat-value" id="lowestMarks">—</div><div class="stat-foot" id="lowestName">Lowest score</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Pass rate</span><span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span></div><div class="stat-value" id="passRate">—</div><div class="stat-foot"><span id="passFailText">—</span> pass / fail</div></article>
+        </div>
+      </section>
+
+      <section class="charts-grid section-block" id="subjects">
+        <article class="panel chart-panel">
+          <div class="panel-heading"><div><h3>Subject-wise performance</h3><p>Average marks by subject</p></div><span class="panel-tag">BAR CHART</span></div>
+          <div class="chart-wrap"><canvas id="subjectChart" aria-label="Average marks by subject"></canvas></div>
+          <div class="chart-insight" id="subjectInsight"><i class="fa-solid fa-sparkles"></i> Subject insights will appear here.</div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-heading"><div><h3>Performance distribution</h3><p>Student count by achievement level</p></div><span class="panel-tag">DOUGHNUT</span></div>
+          <div class="donut-wrap"><canvas id="performanceChart" aria-label="Performance category distribution"></canvas><div class="donut-center"><strong id="donutTotal">0</strong><span>students</span></div></div>
+          <div class="legend-list" id="performanceLegend"></div>
+        </article>
+      </section>
+
+      <section class="section-block" id="attendance">
+        <article class="panel attendance-panel">
+          <div class="panel-heading"><div><h3>Attendance analysis</h3><p>Attendance distribution across the selected records</p></div><div class="attendance-average"><span>Average attendance</span><strong id="averageAttendance">—</strong></div></div>
+          <div class="attendance-chart-wrap"><canvas id="attendanceChart" aria-label="Attendance distribution"></canvas></div>
+          <div class="low-attendance" id="lowAttendance"><i class="fa-solid fa-circle-info"></i> Low-attendance students will be listed here.</div>
+        </article>
+      </section>
+
+      <section class="section-block" id="insights">
+        <div class="section-heading"><div><h2>Insights & findings</h2><p>Automatically generated observations from your dataset</p></div></div>
+        <div class="insights-grid" id="insightsGrid"></div>
+      </section>
+
+      <section class="section-block" id="students">
+        <div class="section-heading table-heading"><div><h2>Student records</h2><p>Explore individual scores and attendance</p></div><button class="button button-outline" id="exportFiltered"><i class="fa-solid fa-file-arrow-down"></i> Export filtered records</button></div>
+        <article class="panel table-panel">
+          <div class="table-meta"><span id="recordCount">0 records</span><span>Pass mark: 40 · Categories based on average marks</span></div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>STUDENT</th><th>ID</th><th>MATHEMATICS</th><th>SCIENCE</th><th>ENGLISH</th><th>COMPUTER</th><th>AVERAGE</th><th>ATTENDANCE</th><th>PERFORMANCE</th></tr></thead>
+              <tbody id="studentTableBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="emptyState" hidden><i class="fa-solid fa-magnifying-glass"></i><strong>No matching students</strong><span>Try changing your filters or upload another dataset.</span></div>
+          <div class="table-footer"><span id="tableFooterText">Showing 0 students</span><span><i class="fa-solid fa-shield-halved"></i> Processed locally in your browser</span></div>
+        </article>
+      </section>
+      <footer class="footer"><span>© 2026 EduMetrics · Student Performance Analytics</span><span>Built for learning and data exploration</span></footer>
+    </main>
+  </div>
+</body>
+</html>
